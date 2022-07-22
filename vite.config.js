@@ -28,4 +28,14 @@ export default defineConfig({
       },
     },
   },
+  server: {
+    proxy: {
+      "/api": {
+        // 当遇到 /api 路径时，将其转换成target的值
+        target: "http://api.chennick.wang/api/",
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, ""), // 将api重写为空
+      },
+    },
+  },
 });
