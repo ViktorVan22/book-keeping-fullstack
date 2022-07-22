@@ -13,3 +13,15 @@
 前后端交互：`axios`
 
 数据库：`mysql`
+
+## Installation
+
+`yarn install`
+
+## Development
+
+`yarn dev`
+
+## Build
+
+`yarn build`
