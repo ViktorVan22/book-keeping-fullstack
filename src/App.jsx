@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import { ConfigProvider } from "zarm";
 import zhCN from "zarm/lib/config-provider/locale/zh_CN";
@@ -10,13 +10,15 @@ function App() {
   return (
     <Router>
       <ConfigProvider primaryColor={"#007fff"} locale={zhCN}>
-        <Switch>
+        <Routes>
           {routes.map(route => (
-            <Route exact key={route.path} path={route.path}>
-              <route.component />
-            </Route>
+            <Route
+              key={route.path}
+              path={route.path}
+              element={<route.component />}
+            />
           ))}
-        </Switch>
+        </Routes>
       </ConfigProvider>
     </Router>
   );
