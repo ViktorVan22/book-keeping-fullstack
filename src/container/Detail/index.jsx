@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import qs from "query-string";
 import dayjs from "dayjs";
@@ -9,12 +9,14 @@ import s from "./style.module.less";
 import Header from "@/components/Header";
 import { get, post, typeMap } from "@/utils";
 import CustomIcon from "../../components/CustomIcon";
+import PopupAddBill from "../../components/PopupAddBill";
 
 const Detail = () => {
   const location = useLocation();
   const { id } = qs.parse(location.search);
   const [detail, setDetail] = useState({});
   const navigate = useNavigate();
+  const editRef = useRef();
 
   useEffect(() => {
     getDetail();
@@ -74,11 +76,12 @@ const Detail = () => {
           <span onClick={deleteDetail}>
             <CustomIcon type="shanchu" /> 删除
           </span>
-          <span>
+          <span onClick={() => editRef.current && editRef.current.show()}>
             <CustomIcon type="tianjia" /> 编辑
           </span>
         </div>
       </div>
+      <PopupAddBill ref={editRef} detail={detail} onReload={getDetail} />
     </div>
   );
 };

@@ -10,7 +10,7 @@ import { get, typeMap, post } from "@/utils";
 
 import s from "./style.module.less";
 
-const PopupAddBill = forwardRef((props, ref) => {
+const PopupAddBill = forwardRef(({ detail = {}, onReload }, ref) => {
   const dateRef = useRef();
   const [show, setShow] = useState(false); // 内部控制弹窗显示隐藏。
   const [payType, setPayType] = useState("expense"); // 支出或收入类型
@@ -21,6 +21,21 @@ const PopupAddBill = forwardRef((props, ref) => {
   const [income, setIncome] = useState([]); // 收入类型数组
   const [remark, setRemark] = useState(""); // 备注
   const [showRemark, setShowRemark] = useState(false); // 备注输入框
+
+  const id = detail && detail.id;
+
+  useEffect(() => {
+    if (detail.id) {
+      setPayType(detail.pay_type === 1 ? "expense" : "income");
+      setCurrentType({
+        id: detail.type_id,
+        name: detail.type_name,
+      });
+      setRemark(detail.remark);
+      setAmount(detail.amount);
+      setDate(dayjs(Number(detail.date)).$d);
+    }
+  }, [detail]);
 
   // 通过 forwardRef 拿到外部传入的 ref，并添加属性，使得父组件可以通过 ref 控制子组件。
   if (ref) {
@@ -34,7 +49,11 @@ const PopupAddBill = forwardRef((props, ref) => {
     };
   }
 
-  useEffect(async () => {
+  useEffect(() => {
+    getTypeList();
+  }, []);
+
+  const getTypeList = async () => {
     const {
       data: { list },
     } = await get("/api/type/list");
@@ -42,8 +61,11 @@ const PopupAddBill = forwardRef((props, ref) => {
     const _income = list.filter(i => i.type == 2); // 收入类型
     setExpense(_expense);
     setIncome(_income);
-    setCurrentType(_expense[0]); // 新建账单，类型默认是支出类型数组的第一项
-  }, []);
+    if (!id) {
+      // 没有id的情况下，说明是新建账单
+      setCurrentType(_expense[0]); // 新建账单，类型默认是支出类型数组的第一项
+    }
+  };
 
   // 切换收入还是支出
   const changeType = type => {
@@ -57,7 +79,6 @@ const PopupAddBill = forwardRef((props, ref) => {
 
   // 监听输入框改变值
   const handleMoney = value => {
-    console.log("value", value);
     value = String(value);
     // 点击是删除按钮时
     if (value == "delete") {
@@ -101,15 +122,21 @@ const PopupAddBill = forwardRef((props, ref) => {
       pay_type: payType == "expense" ? 1 : 2,
       remark: remark || "",
     };
-    const result = await post("/api/bill/add", params);
-    setAmount("");
-    setPayType("expense");
-    setCurrentType(expense[0]);
-    setDate(new Date());
-    setRemark("");
-    Toast.show("添加成功");
+    if (id) {
+      params.id = id;
+      const result = await post("/api/bill/update", params);
+      Toast.show("修改成功");
+    } else {
+      const result = await post("/api/bill/add", params);
+      setAmount("");
+      setPayType("expense");
+      setCurrentType(expense[0]);
+      setDate(new Date());
+      setRemark("");
+      Toast.show("添加成功");
+    }
     setShow(false);
-    if (props.onReload) props.onReload();
+    if (onReload) onReload();
   };
 
   return (
