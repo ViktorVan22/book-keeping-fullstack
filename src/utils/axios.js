@@ -5,7 +5,7 @@ const MODE = import.meta.env.MODE; // 环境变量
 
 // 根据环境变量使用相对应的请求的基础路径
 axios.defaults.baseURL =
-  MODE === "development" ? "/api" : "http://api.chennick.wang";
+  MODE === "development" ? "" : "http://api.chennick.wang";
 
 // 设置请求头
 axios.defaults.withCredentials = true;
