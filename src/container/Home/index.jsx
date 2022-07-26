@@ -7,6 +7,8 @@ import BillItem from "@/components/BillItem";
 import PopupType from "@/components/PopupType";
 import PopupDate from "@/components/PopupDate";
 import { get, REFRESH_STATE, LOAD_STATE } from "@/utils";
+import CustomIcon from "../../components/CustomIcon";
+import PopupAddBill from "../../components/PopupAddBill";
 const Home = () => {
   const [list, setList] = useState([]); // 账单列表
   const [currentTime, setCurrentTime] = useState(dayjs().format("YYYY-MM"));
@@ -19,6 +21,7 @@ const Home = () => {
   const monthRef = useRef();
   const [totalExpense, setTotalExpense] = useState(0);
   const [totalIncome, setTotalIncome] = useState(0);
+  const addRef = useRef(); // 添加账单ref
 
   useEffect(() => {
     getBillList(); // 账单页面初始化
@@ -83,6 +86,11 @@ const Home = () => {
     }
   };
 
+  // 添加账单弹窗
+  const addToggle = () => {
+    addRef.current && addRef.current.show();
+  };
+
   return (
     <div className={s.home}>
       <div className={s.header}>
@@ -131,8 +139,12 @@ const Home = () => {
           <div>无法获取账单数据</div>
         )}
       </div>
+      <div className={s.add} onClick={addToggle}>
+        <CustomIcon type="tianjia" />
+      </div>
       <PopupType ref={typeRef} />
       <PopupDate ref={monthRef} mode="month" onSelect={selectMonth} />
+      <PopupAddBill ref={addRef} onReload={refreshData} />
     </div>
   );
 };
