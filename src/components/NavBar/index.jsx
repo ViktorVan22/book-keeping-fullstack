@@ -7,11 +7,11 @@ import CustomIcon from "../CustomIcon";
 
 const NavBar = ({ showNav }) => {
   const [activeKey, setActiveKey] = useState("/");
-  const history = useNavigate();
+  const navigate = useNavigate();
 
   const changeTab = path => {
     setActiveKey(path);
-    history(path);
+    navigate(path);
   };
 
   return (
